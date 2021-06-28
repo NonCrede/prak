@@ -105,12 +105,37 @@ def FilterByExploit():
         except KeyError:
             continue
 
-def FilterByProtInfo():
+def FilterByStatus():
     for i in Length:
         try:
-            if 'Информация об устранении отсутствует' in str(Everything[i][17]):
+            if 'Подтверждена' in str(Everything[i][7]):
                 continue
             else:
                 del Everything[i]
         except KeyError:
             continue
+
+def UyazCounter():
+    CritCounter = 0
+    HighCounter = 0
+    MediumCounter = 0
+    LowCounter = 0
+    for i in Length:
+        try:
+            if 'Критический' in str(Everything[i][6]):
+                CritCounter += 1
+                continue
+            elif 'Высокий' in str(Everything[i][6]):
+                HighCounter += 1
+                continue
+            elif 'Средний' in str(Everything[i][6]):
+                MediumCounter += 1
+                continue
+            elif 'Низкий' in str(Everything[i][6]):
+                LowCounter += 1
+                continue
+            else:
+                continue
+        except KeyError:
+            continue
+    return CritCounter, HighCounter, MediumCounter, LowCounter
