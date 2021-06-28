@@ -24,13 +24,15 @@ def updatefile():
 workbook = load_workbook('test.xlsx')
 column = workbook.active
 
+Date1 = 0
+Date2 = 0
 Everything = {}
 Vulner = []
 Description = []
 Soft = []
 SoftType = []
 VulnerClass = []
-Date = []
+DateFound = []
 VulnerLVL = []
 Status = []
 Exploit = []
@@ -38,6 +40,7 @@ ProtInfo = []
 CWEType = []
 Measures = []
 ID = []
+Length = 0
 
 def initial_file():
     Counter = 0
@@ -48,7 +51,7 @@ def initial_file():
             Soft.append(column.cell(row=row, column=5).value)
             SoftType.append(column.cell(row=row, column=7).value)
             VulnerClass.append(column.cell(row=row, column=9).value)
-            Date.append(column.cell(row=row, column=10).value)
+            DateFound.append(column.cell(row=row, column=10).value)
             VulnerLVL.append(column.cell(row=row, column=13).value)
             Status.append(column.cell(row=row, column=15).value)
             Exploit.append(column.cell(row=row, column=16).value)
@@ -59,7 +62,7 @@ def initial_file():
             Counter += 1
     for i in range(Counter):
         Everything[i] = (
-            Vulner[i], Description[i], Soft[i], SoftType[i], VulnerClass[i], Date[i],
+            Vulner[i], Description[i], Soft[i], SoftType[i], VulnerClass[i], DateFound[i],
             VulnerLVL[i],
             Status[i], Exploit[i], ProtInfo[i], CWEType[i], Measures[i], ID[i])
 
@@ -70,29 +73,31 @@ def CountCheker(Count):
         Counter += 1
     return Counter
 
-Length = CountCheker(Everything)
 
 def TranslateToDate(Date):
     Translate = "%d.%m.%Y"
-    Dated= datetime.strptime(Date, Translate)
+    Dated = datetime.strptime(Date, Translate)
     return Dated
-
+'''
 def TranslatorTDate(Date):
-    TranslatorTDate = "%m/%d/%y"
+    TranslatorTDate = "%d/%m/%Y"
     DateTranslator = datetime.strptime(Date, TranslatorTDate)
     return DateTranslator
+    '''
 
-def FilterByDate(Date1,Date2,Length):
+def FilterByDate(Date1, Date2, Length):
     for i in range(Length):
         try:
             if Everything[i][5] is None:
                 del Everything[i]
                 continue
-            if (TranslateToDate(Everything[i][5]) < Date1) | (TranslateToDate(Everything[i][5] > Date2)):
+            if (TranslateToDate(Everything[i][5]) < TranslateToDate(Date1)) | (
+                    TranslateToDate(Everything[i][5]) > TranslateToDate(Date2)):
                 del Everything[i]
                 continue
         except KeyError:
             continue
+
 
 def FilterByExploit():
     for i in range(Length):
@@ -123,19 +128,22 @@ def UyazCounter():
             elif 'Низкий' in str(Everything[i][6]):
                 LowCounter += 1
                 continue
-            else:
-                continue
         except KeyError:
             continue
     return [CritCounter, HighCounter, MediumCounter, LowCounter]
 
 def diagram():
-    index = ['Критический','Высокий','Средний','Низкий']
+    index = ['Критический', 'Высокий', 'Средний', 'Низкий']
     values = UyazCounter()
+    print(values)
     plt.bar(index, values)
     plt.savefig('graph.png', bbox_inches='tight')
     plt.show()
 
+
 initial_file()
-FilterByDate(str('12.03.2018'), str('21.05.2021'),Length)
+Length = CountCheker(Everything)
+FilterByDate(str('12.03.2016'), str('21.05.2021'), Length)
+for i in Everything:
+    print(Everything[i][5])
 diagram()
