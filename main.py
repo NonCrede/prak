@@ -9,7 +9,6 @@ import requests
 from openpyxl import load_workbook
 from datetime import datetime
 import matplotlib.pyplot as plt
-import docx
 import os
 
 def updatefile():
@@ -66,10 +65,10 @@ def initial_file():
 
 
 def CountCheker(Count):
-    Count = 0
+    Counter = 0
     for t in Count:
-        Count += 1
-    return Count
+        Counter += 1
+    return Counter
 
 Length = CountCheker(Everything)
 
@@ -84,7 +83,7 @@ def TranslatorTDate(Date):
     return DateTranslator
 
 def FilterByDate(Date1,Date2,Length):
-    for i in Length:
+    for i in range(Length):
         try:
             if Everything[i][5] is None:
                 del Everything[i]
@@ -96,21 +95,11 @@ def FilterByDate(Date1,Date2,Length):
             continue
 
 def FilterByExploit():
-    for i in Length:
+    for i in range(Length):
         try:
             if 'Существует' in str(Everything[i][8]):
                 continue
             elif 'уточняются' in str(Everything[i][8]):
-                del Everything[i]
-        except KeyError:
-            continue
-
-def FilterByStatus():
-    for i in Length:
-        try:
-            if 'Подтверждена' in str(Everything[i][7]):
-                continue
-            else:
                 del Everything[i]
         except KeyError:
             continue
@@ -120,7 +109,7 @@ def UyazCounter():
     HighCounter = 0
     MediumCounter = 0
     LowCounter = 0
-    for i in Length:
+    for i in range(Length):
         try:
             if 'Критический' in str(Everything[i][6]):
                 CritCounter += 1
@@ -146,3 +135,7 @@ def diagram():
     plt.bar(index, values)
     plt.savefig('graph.png', bbox_inches='tight')
     plt.show()
+
+initial_file()
+FilterByDate(str('12.03.2018'), str('21.05.2021'),Length)
+diagram()
