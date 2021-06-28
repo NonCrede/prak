@@ -42,7 +42,7 @@ ID = []
 def initial_file():
     Counter = 0
     for row in range(1, column.max_row):
-        if 'Flash Player' in str(column.cell(row=row, column=5).value):
+        if 'Thunderbird' in str(column.cell(row=row, column=5).value):
             Vulner.append(column.cell(row=row, column=2).value)
             Description.append(column.cell(row=row, column=3).value)
             Soft.append(column.cell(row=row, column=5).value)
@@ -109,7 +109,7 @@ def UyazCounter():
     HighCounter = 0
     MediumCounter = 0
     LowCounter = 0
-    for i in range(Length):
+    for i in Everything:
         try:
             if 'Критический' in str(Everything[i][6]):
                 CritCounter += 1
