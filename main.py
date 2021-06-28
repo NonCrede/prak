@@ -138,4 +138,11 @@ def UyazCounter():
                 continue
         except KeyError:
             continue
-    return CritCounter, HighCounter, MediumCounter, LowCounter
+    return [CritCounter, HighCounter, MediumCounter, LowCounter]
+
+def diagram():
+    index = ['Критический','Высокий','Средний','Низкий']
+    values = UyazCounter()
+    plt.bar(index, values)
+    plt.savefig('graph.png', bbox_inches='tight')
+    plt.show()
