@@ -84,6 +84,41 @@ def TranslatorTDate(Date):
     DateTranslator = datetime.strptime(Date, TranslatorTDate)
     return DateTranslator
     '''
+def FilterByClass(Length, Class):
+    for i in range(Length):
+        if (Class != 1) & ('Уязвимость архитектуры' in Everything[i][5]):
+            del Everything[i]
+            continue
+        elif (Class != 2) & ('Уязвимость кода' in Everything[i][5]):
+            del Everything[i]
+            continue
+        elif (Class != 3) & ('Уязвимость многофакторная' in Everything[i][5]):
+            del Everything[i]
+            continue
+
+
+def FilterByStatus(Length):
+    for i in range(Length):
+        try:
+            if 'Подтверждена' in str(Everything[i][7]):
+                continue
+            elif 'Подтверждена' not in str(Everything[i][7]):
+                del Everything[i]
+                continue
+        except KeyError:
+            continue
+
+
+def FilterByUSTRINFO():
+    for i in Everything:
+        try:
+            if 'Переменная' in str(Everything[i][9]):
+                continue
+            else:
+                del Everything[i]
+                continue
+        except KeyError:
+            continue
 
 def FilterByDate(Date1, Date2, Length):
     for i in range(Length):
@@ -99,13 +134,24 @@ def FilterByDate(Date1, Date2, Length):
             continue
 
 
-def FilterByExploit():
+def FilterByExploit(Length):
     for i in range(Length):
         try:
             if 'Существует' in str(Everything[i][8]):
                 continue
             elif 'уточняются' in str(Everything[i][8]):
                 del Everything[i]
+        except KeyError:
+            continue
+
+def FilterByDangerLVL():
+    for i in Everything:
+        try:
+            if 'Переменная' in str(Everything[i][6]):
+                continue
+            else:
+                del Everything[i]
+                continue
         except KeyError:
             continue
 
@@ -144,6 +190,7 @@ def diagram():
 initial_file()
 Length = CountCheker(Everything)
 FilterByDate(str('12.03.2016'), str('21.05.2021'), Length)
-for i in Everything:
-    print(Everything[i][5])
 diagram()
+
+
+
