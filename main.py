@@ -9,6 +9,7 @@ import requests
 from openpyxl import load_workbook
 from datetime import datetime
 import matplotlib.pyplot as plt
+import docx
 import os
 
 def updatefile():
@@ -37,10 +38,11 @@ VulnerLVL = []
 Status = []
 Exploit = []
 ProtInfo = []
-CWEType = []
+CWE = []
 Measures = []
 ID = []
 Length = 0
+Class = 0
 
 def initial_file():
     Counter = 0
@@ -56,7 +58,7 @@ def initial_file():
             Status.append(column.cell(row=row, column=15).value)
             Exploit.append(column.cell(row=row, column=16).value)
             ProtInfo.append(column.cell(row=row, column=17).value)
-            CWEType.append(column.cell(row=row, column=21).value)
+            CWE.append(column.cell(row=row, column=21).value)
             Measures.append(column.cell(row=row, column=14).value)
             ID.append(column.cell(row=row, column=2).value)
             Counter += 1
@@ -64,7 +66,7 @@ def initial_file():
         Everything[i] = (
             Vulner[i], Description[i], Soft[i], SoftType[i], VulnerClass[i], DateFound[i],
             VulnerLVL[i],
-            Status[i], Exploit[i], ProtInfo[i], CWEType[i], Measures[i], ID[i])
+            Status[i], Exploit[i], ProtInfo[i], CWE[i], Measures[i], ID[i])
 
 
 def CountCheker(Count):
@@ -112,7 +114,7 @@ def FilterByStatus(Length):
 def FilterByUSTRINFO():
     for i in Everything:
         try:
-            if 'Переменная' in str(Everything[i][9]):
+            if 'Переменная 17' in str(Everything[i][9]):
                 continue
             else:
                 del Everything[i]
@@ -130,6 +132,16 @@ def FilterByDate(Date1, Date2, Length):
                     TranslateToDate(Everything[i][5]) > TranslateToDate(Date2)):
                 del Everything[i]
                 continue
+        except KeyError:
+            continue
+
+def FilterByCWE():
+    for i in Everything:
+        try:
+            if 'CWE-' + 'Переменная' in str(Everything[i][10]):
+                continue
+            else:
+                del Everything[i]
         except KeyError:
             continue
 
@@ -154,6 +166,28 @@ def FilterByDangerLVL():
                 continue
         except KeyError:
             continue
+
+
+def Report():
+    Doc = docx.Document()
+    Table = Doc.add_table(
+        rows=1,
+        cols=3)
+    Table.style = 'Table Grid'
+    Row = Table.rows[0].cells
+    Row[0].text = 'Id'
+    Row[1].text = 'Date'
+    Row[2].text = 'Level'
+    for i in range(LengthAll):
+        try:
+            Row[0].text = str(Elements[i][0])
+            Row[1].text = str(Elements[i][5])
+            Row[2].text = str(Elements[i][6])
+            Row = Table.add_row().cells
+            continue
+        except KeyError:
+            continue
+    Doc.save('Report.docx')
 
 def UyazCounter():
     CritCounter = 0
@@ -191,6 +225,4 @@ initial_file()
 Length = CountCheker(Everything)
 FilterByDate(str('12.03.2016'), str('21.05.2021'), Length)
 diagram()
-
-
 
