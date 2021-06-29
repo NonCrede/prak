@@ -46,11 +46,13 @@ Length = 0
 Class = 0
 Text = str()
 
+
 class window(QMainWindow, mainwindow):
     def __init__(self):
         super(window, self).__init__()
         self.setupUi(self)
         self.initUI()
+
 
     def initUI(self):
         self.ShowDiagram.clicked.connect(lambda: self.diagram())
@@ -62,6 +64,13 @@ class window(QMainWindow, mainwindow):
         self.UyazClass.addItems(ExploitClassList)
         ExploitStatusList = ['Без фильтра', 'Подтверждена', 'Потенциальная']
         self.ExploitStat.addItems(ExploitStatusList)
+        ExploitStatusInfo = ['Без фильтра', 'Информация об устранении отсутствует', 'Уязвимость устранена']
+        self.InfoObUstr.addItems(ExploitStatusInfo)
+        DangerLVLlist = ['Без фильтра', 'Критический', 'Высокий', 'Средний', 'Низкий']
+        self.DangerLVL.addItems(DangerLVLlist)
+
+
+
 
 
     def updatefile(self):
@@ -101,8 +110,6 @@ class window(QMainWindow, mainwindow):
                 Vulner[i], Description[i], Soft[i], SoftType[i], VulnerClass[i], DateFound[i],
                 VulnerLVL[i],
                 Status[i], Exploit[i], ProtInfo[i], CWE[i], Measures[i], ID[i])
-
-
 
     def CountCheker(self, Count):
         Counter = 0
@@ -149,15 +156,16 @@ class window(QMainWindow, mainwindow):
                     continue
 
     def FilterByUSTRINFO(self):
-        for i in Everything:
-            try:
-                if 'Переменная 17' in str(Everything[i][9]):
+        ExploitStatusInfo = self.ExploitStat.currentText()
+        if (ExploitStatusInfo != 'Без фильтра'):
+            for i in range(Length):
+                try:
+                    if ExploitStatusInfo in str(Everything[i][9]):
+                        continue
+                    else:
+                        del Everything[i]
+                except KeyError:
                     continue
-                else:
-                    del Everything[i]
-                    continue
-            except KeyError:
-                continue
 
     def FilterByDate(self, Date1, Date2, Length):
         global Everything
@@ -177,14 +185,17 @@ class window(QMainWindow, mainwindow):
                 continue
 
     def FilterByCWE(self):
-        for i in Everything:
-            try:
-                if 'CWE-' + 'Переменная' in str(Everything[i][10]):
+        CWEcode = str()
+        CWEcode = self.spinBox.text()
+        if (CWEcode != '0'):
+            for i in range(Length):
+                try:
+                    if CWEcode in str(Everything[i][10]):
+                        continue
+                    else:
+                        del Everything[i]
+                except KeyError:
                     continue
-                else:
-                    del Everything[i]
-            except KeyError:
-                continue
 
     def FilterByExploit(self, Length):
         ExploitList = self.ExploitNal.currentText()
@@ -200,15 +211,16 @@ class window(QMainWindow, mainwindow):
 
 
     def FilterByDangerLVL(self):
-        for i in Everything:
-            try:
-                if 'Переменная' in str(Everything[i][6]):
+        DangerLVLlist = self.DangerLVL.currentText()
+        if (DangerLVLlist != 'Без фильтра'):
+            for i in range(Length):
+                try:
+                    if DangerLVLlist in str(Everything[i][6]):
+                        continue
+                    else:
+                        del Everything[i]
+                except KeyError:
                     continue
-                else:
-                    del Everything[i]
-                    continue
-            except KeyError:
-                continue
 
     def Report(self):
         Doc = self.docx.Document()
@@ -217,9 +229,6 @@ class window(QMainWindow, mainwindow):
             cols=3)
         Table.style = 'Table Grid'
         Row = Table.rows[0].cells
-        Row[0].text = 'Id'
-        Row[1].text = 'Date'
-        Row[2].text = 'Level'
         for i in range(Length):
             try:
                 Row[0].text = str(Everything[i][0])
@@ -259,6 +268,7 @@ class window(QMainWindow, mainwindow):
         values = self.UyazCounter()
         print(values)
         plt.bar(index, values)
+        plt.title('Количественная диаграмма по уровню опасности')
         plt.savefig('graph.png', bbox_inches='tight')
         plt.show()
 
@@ -270,12 +280,15 @@ class window(QMainWindow, mainwindow):
         self.FilterByExploit(Length)
         self.FilterByClass(Length)
         self.FilterByStatus(Length)
+        self.FilterByUSTRINFO()
+        self.FilterByDangerLVL()
+        self.FilterByCWE()
+
+
 
         for i in Everything:
-            print(Everything[i][5])
-            print(Everything[i][4])
-            print(Everything[i][8])
-            print(Everything[i][7])
+
+            print(Everything[i][10])
 
 
 
