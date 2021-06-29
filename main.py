@@ -8,11 +8,11 @@ import time
 import numpy as np
 import openpyxl
 import requests
-import docx
 from openpyxl import load_workbook
 from datetime import datetime
 import matplotlib.pyplot as plt
 import os
+import docx
 
 def log_uncaught_exceptions(ex_cls, ex, tb): #error catcher
     text = '{}: {}:\n'.format(ex_cls.__name__, ex)
@@ -57,6 +57,7 @@ class window(QMainWindow, mainwindow):
     def initUI(self):
         self.ShowDiagram.clicked.connect(lambda: self.diagram())
         self.UpdateBase.clicked.connect(lambda: self.updatefile())
+        self.DocxButton.clicked.connect(lambda: self.Report())
         self.StartProgramm.clicked.connect(lambda: self.Result())
         ExploitList = ['Без фильтра', 'Данные уточняются', 'Существует', 'Существует в открытом доступе']
         self.ExploitNal.addItems(ExploitList)
@@ -223,7 +224,7 @@ class window(QMainWindow, mainwindow):
                     continue
 
     def Report(self):
-        Doc = self.docx.Document()
+        Doc = docx.Document()
         Table = Doc.add_table(
             rows=1,
             cols=3)
