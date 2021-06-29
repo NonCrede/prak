@@ -58,6 +58,11 @@ class window(QMainWindow, mainwindow):
         self.StartProgramm.clicked.connect(lambda: self.Result())
         ExploitList = ['Без фильтра', 'Данные уточняются', 'Существует', 'Существует в открытом доступе']
         self.ExploitNal.addItems(ExploitList)
+        ExploitClassList = ['Без фильтра', 'Уязвимость архитектуры', 'Уязвимость кода', 'Уязвимость многофакторная']
+        self.UyazClass.addItems(ExploitClassList)
+        ExploitStatusList = ['Без фильтра', 'Подтверждена', 'Потенциальная']
+        self.ExploitStat.addItems(ExploitStatusList)
+
 
     def updatefile(self):
         dls = "https://bdu.fstec.ru/files/documents/vullist.xlsx"
@@ -118,28 +123,30 @@ class window(QMainWindow, mainwindow):
         return DateTranslator
         '''
 
-    def FilterByClass(self, Length, Class):
-        for i in range(Length):
-            if (Class != 1) & ('Уязвимость архитектуры' in Everything[i][5]):
-                del Everything[i]
-                continue
-            elif (Class != 2) & ('Уязвимость кода' in Everything[i][5]):
-                del Everything[i]
-                continue
-            elif (Class != 3) & ('Уязвимость многофакторная' in Everything[i][5]):
-                del Everything[i]
-                continue
+    def FilterByClass(self, Length):
+        ExploitClassList = self.UyazClass.currentText()
+        if (ExploitClassList != 'Без фильтра'):
+            for i in range(Length):
+                try:
+                    if ExploitClassList in str(Everything[i][4]):
+                        continue
+                    else:
+                        del Everything[i]
+                except KeyError:
+                    continue
+
 
     def FilterByStatus(self, Length):
-        for i in range(Length):
-            try:
-                if 'Подтверждена' in str(Everything[i][7]):
+        ExploitStatusList = self.ExploitStat.currentText()
+        if (ExploitStatusList != 'Без фильтра'):
+            for i in range(Length):
+                try:
+                    if ExploitStatusList in str(Everything[i][7]):
+                        continue
+                    else:
+                        del Everything[i]
+                except KeyError:
                     continue
-                elif 'Подтверждена' not in str(Everything[i][7]):
-                    del Everything[i]
-                    continue
-            except KeyError:
-                continue
 
     def FilterByUSTRINFO(self):
         for i in Everything:
@@ -161,7 +168,6 @@ class window(QMainWindow, mainwindow):
                 if Everything[i][5] is None:
                     del Everything[i]
                     continue
-                #if Everything[i][5] != 'Дата выявления':
                 if (self.TranslateToDate(Everything[i][5]) < self.TranslateToDate(Date1)) | (
                         self.TranslateToDate(Everything[i][5]) > self.TranslateToDate(Date2)):
                     del Everything[i]
@@ -182,14 +188,16 @@ class window(QMainWindow, mainwindow):
 
     def FilterByExploit(self, Length):
         ExploitList = self.ExploitNal.currentText()
-        for i in range(Length):
-            try:
-                if ExploitList in str(Everything[i][8]):
+        if (ExploitList != 'Без фильтра'):
+            for i in range(Length):
+                try:
+                    if ExploitList in str(Everything[i][8]):
+                        continue
+                    else:
+                        del Everything[i]
+                except KeyError:
                     continue
-                else:
-                    del Everything[i]
-            except KeyError:
-                continue
+
 
     def FilterByDangerLVL(self):
         for i in Everything:
@@ -260,9 +268,14 @@ class window(QMainWindow, mainwindow):
         Length = self.CountCheker(Everything)
         self.FilterByDate(Date1, Date2, Length)
         self.FilterByExploit(Length)
+        self.FilterByClass(Length)
+        self.FilterByStatus(Length)
+
         for i in Everything:
             print(Everything[i][5])
+            print(Everything[i][4])
             print(Everything[i][8])
+            print(Everything[i][7])
 
 
 
